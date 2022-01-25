@@ -1,0 +1,40 @@
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: rgb(211, 168, 58);
+  padding-left: 10px;
+}
+
+a {
+  display: block;
+  width: 8%;
+  margin: 20px auto;
+  text-decoration: none;
+  font-size: 25px;
+  color: rgb(190, 8, 84);
+}
+
+.cards {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.card {
+  width: 400px;
+  padding: 15px;
+  margin: 10px;
+  background-color: rgb(245, 234, 245);
+  border: 3px solid rgb(105, 51, 105);
+  font-weight: bold;
+  font-size: 18px;
+  font-family: "Lucida Console", "Courier New", monospace;
+}
+
+.card p {
+  margin: 10px 0px;
+}

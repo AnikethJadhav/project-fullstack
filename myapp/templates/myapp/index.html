@@ -1,0 +1,127 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="{% static 'myapp/index.css' %}" />
+  <title>Forms</title>
+</head>
+<body>
+  <a href="/records" id="list">Records</a>
+  <div id="data"></div>
+  <div class="alert"></div>
+</body>
+<script>
+  let valid_data = {}
+  
+  let obj = {
+    name: '<p>Enter Your Name below</p><input type="hidden" name="name" value="email" id="count"><input type="text" id="name" placeholder="Name"><button class="next" onclick="name_validator()">next</button>', 
+    email: '<p>Enter Your Email below</p><input type="hidden" name="email" value="gender" id="count"><input type="email" id="email" placeholder="Email"><button class="next" onclick="name_validator()">next</button>',
+    gender: '<p>Select Your Gender below</p><input type="hidden" name="gender" value="age" id="count"><select id="gender" name="gender"><option value="male" selected>Male</option><option value="female">Female</option></select><button class="next" onclick="gender_validator()">next</button>', 
+    age: '<p>Enter Your Age below</p><input type="hidden" name="age" value="none" id="count"><input type="number" id="age" placeholder="Age" /><button class="submit" onclick="age_validator()">submit</button>' 
+  }
+
+  const alert = document.getElementsByClassName('alert')[0];
+  const data = document.getElementById('data')
+  data.innerHTML = obj.name
+  
+  function name_validator() {
+    let counter = document.getElementById('count')
+    let field = document.getElementById(`${counter.name}`)
+
+    let val = field.value
+
+    if (val == '' | !isNaN(val)) {
+      field.value = ''
+      alert.style.display = "block"
+      alert.innerText = "Enter a valid value"
+      alert.classList.add("fail");
+      console.log("Enter a valid value")
+    } else if (val.length < 8) {
+      field.value = ''
+      alert.style.display = "block"
+      alert.innerText = "field contains less than 8 characters"
+      alert.classList.add("fail");
+      console.log("Value has less than 8 characters")
+    } else if (counter.name == "email" & val.indexOf("@") == -1) {
+      field.value = ''
+      alert.style.display = "block"
+      alert.innerText = "Enter a valid Email ID"
+      alert.classList.add("fail");
+      console.log("Enter a valid Email ID")
+    } else {
+      valid_data[`${counter.name}`] = val
+      data.innerHTML = obj[`${counter.value}`]
+      alert.style.display = "none"
+      console.log(counter.name, val, counter.value)
+    }
+  }
+
+  function gender_validator() {
+    let counter = document.getElementById('count')
+    let field = document.getElementById(`${counter.name}`)
+
+    let val = field.value
+    
+    console.log(counter.name, val, counter.value)
+    valid_data[`${counter.name}`] = val
+    data.innerHTML = obj[`${counter.value}`]
+  }
+
+  function age_validator() {
+    const button = document.getElementsByClassName('submit')[0];
+    let counter = document.getElementById('count');
+    let field = document.getElementById(`${counter.name}`);
+
+    let val = field.value
+
+    if (val == '') {
+      field.value = ''
+      alert.style.display = "block"
+      alert.innerText = "Enter a valid value"
+      console.log("Enter a valid value")
+    } else if (val < 18 | val > 60) {
+      field.value = ''
+      alert.style.display = "block"
+      alert.innerText = "Age is not in the range of 18-60"
+      console.log("Age is not in the range of 18-60");
+    } else {
+      button.disabled = true
+      valid_data[`${counter.name}`] = val
+
+      fetch("/save-record", {
+        method: 'POST',
+        body: JSON.stringify(valid_data),
+        headers: { 'Accept': 'application/json, text/plain, */*',
+                  'Content-Type': 'application/json'},
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+        alert.style.display = "block"
+        if (data.status) {
+          alert.classList.remove("fail");
+          alert.classList.add("success");
+          alert.innerText = data.message
+        } else {
+          alert.classList.add("fail");
+          alert.innerText = data.message
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+      
+      console.log(counter.name, val, counter.value)
+      console.log(valid_data)
+      const myTimeout = setTimeout(()=>{
+        location.reload();
+      }, 1000);
+    }
+  }
+
+</script>
+</html>
