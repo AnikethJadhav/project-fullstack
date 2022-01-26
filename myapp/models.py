@@ -5,9 +5,10 @@ from django.db import models
 
 class User(models.Model):
   name = models.CharField(max_length=30)
-  age = models.IntegerField()
+  age = models.IntegerField(null=True)
   gender = models.CharField(max_length=6)
   email = models.EmailField(primary_key=True)
+  marital_status = models.CharField(max_length=8, null=True)
 
   def __str__(self):
-        return self.name
+    return self.name

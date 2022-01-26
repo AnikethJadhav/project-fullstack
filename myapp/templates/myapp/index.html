@@ -21,7 +21,8 @@
     name: '<p>Enter Your Name below</p><input type="hidden" name="name" value="email" id="count"><input type="text" id="name" placeholder="Name"><button class="next" onclick="name_validator()">next</button>', 
     email: '<p>Enter Your Email below</p><input type="hidden" name="email" value="gender" id="count"><input type="email" id="email" placeholder="Email"><button class="next" onclick="name_validator()">next</button>',
     gender: '<p>Select Your Gender below</p><input type="hidden" name="gender" value="age" id="count"><select id="gender" name="gender"><option value="male" selected>Male</option><option value="female">Female</option></select><button class="next" onclick="gender_validator()">next</button>', 
-    age: '<p>Enter Your Age below</p><input type="hidden" name="age" value="none" id="count"><input type="number" id="age" placeholder="Age" /><button class="submit" onclick="age_validator()">submit</button>' 
+    age: '<p>Enter Your Age below</p><input type="hidden" name="age" value="none" id="count"><input type="number" id="age" placeholder="Age" /><button class="submit" onclick="age_validator()">submit</button>',
+    marital_status: '<p>Specify Your Marital Status below</p><input type="hidden" name="marital_status" value="none" id="count"><select id="marital_status" name="marital_status"><option value="married" selected>Married</option><option value="unmarried">Unmarried</option></select><button class="submit" onclick="marital_status()">submit</button>' 
   }
 
   const alert = document.getElementsByClassName('alert')[0];
@@ -66,6 +67,10 @@
 
     let val = field.value
     
+    if (val == 'male') {
+      counter.value = "marital_status"
+    }
+
     console.log(counter.name, val, counter.value)
     valid_data[`${counter.name}`] = val
     data.innerHTML = obj[`${counter.value}`]
@@ -121,6 +126,46 @@
         location.reload();
       }, 1000);
     }
+  }
+
+  function marital_status() {
+    const button = document.getElementsByClassName('submit')[0];
+    let counter = document.getElementById('count');
+    let field = document.getElementById(`${counter.name}`);
+
+    let val = field.value
+
+    button.disabled = true
+    valid_data[`${counter.name}`] = val
+
+    fetch("/save-record", {
+      method: 'POST',
+      body: JSON.stringify(valid_data),
+      headers: { 'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'},
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:', data);
+      alert.style.display = "block"
+      if (data.status) {
+        alert.classList.remove("fail");
+        alert.classList.add("success");
+        alert.innerText = data.message
+      } else {
+        alert.classList.add("fail");
+        alert.innerText = data.message
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+    
+    console.log(counter.name, val, counter.value)
+    console.log(valid_data)
+    const myTimeout = setTimeout(()=>{
+      location.reload();
+    }, 1000);
   }
 
 </script>
